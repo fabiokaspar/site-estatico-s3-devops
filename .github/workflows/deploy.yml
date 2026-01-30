@@ -127,7 +127,8 @@ jobs:
       - name: Deploy to S3
         run: |
           echo "Deployando para o bucket: $BUCKET_NAME"
-          aws s3 sync build/* s3://$BUCKET_NAME --delete --exclude --exclude ".git/*" --exclude ".github/*" --exclude "README.md"
+          cd build
+          aws s3 sync . s3://$BUCKET_NAME --delete --exclude ".git/*" --exclude ".github/*" --exclude "README.md"
 
       - name: Display Website URL
         run: |
