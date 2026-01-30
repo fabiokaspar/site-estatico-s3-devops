@@ -119,7 +119,6 @@ jobs:
 
       - name: Build Website
         run: |
-          cd website
           echo "Buildando aplicação react..."
           npm ci
           npm run build
