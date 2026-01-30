@@ -36,9 +36,9 @@ resource "aws_s3_bucket_public_access_block" "website_public_access" {
 # Ensure bucket object ownership is explicitly set to BucketOwnerEnforced when possible.
 # This disables ACLs at the account/bucket level so only policies are used for access control.
 resource "aws_s3_bucket_ownership_controls" "this" {
-  bucket = aws_s3_bucket.this.id
+  bucket = aws_s3_bucket.website.id
 
-  depends_on = [aws_s3_bucket_public_access_block.this]
+  depends_on = [aws_s3_bucket_public_access_block.website_public_access]
 
   rule {
     object_ownership = "BucketOwnerEnforced"
