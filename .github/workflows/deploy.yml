@@ -120,7 +120,7 @@ jobs:
       - name: Build Website
         run: |
           echo "Buildando aplicação react..."
-          npm ci
+          npm install
           npm run build
           echo "Build concluído."
 
