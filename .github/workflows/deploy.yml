@@ -78,9 +78,7 @@ jobs:
       - name: Terraform Destroy Old CloudFront Distribuitions
         run: |
           cd terraform-cicd
-          terraform destroy -auto-approve \
-            -target=aws_cloudfront_distribution.this \  
-            -target=aws_cloudfront_origin_access_control.this
+          terraform destroy -auto-approve 
 
       - name: Terraform Validate
         run: |
