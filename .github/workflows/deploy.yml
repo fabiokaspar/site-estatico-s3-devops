@@ -70,10 +70,10 @@ jobs:
         with:
           terraform_version: 1.5.0
 
-      - name: Terraform Init
-        run: |
-          cd terraform-cicd
-          terraform init
+      # - name: Terraform Init
+      #   run: |
+      #     cd terraform-cicd
+      #     terraform init
 
       # - name: Terraform Destroy Old CloudFront Distribuitions
       #   run: |
@@ -116,7 +116,8 @@ jobs:
     env:
       BUCKET_NAME: site-estatico-s3-fabiokaspar2026
       WEBSITE_URL: http://site-estatico-s3-fabiokaspar2026.s3-website-us-east-1.amazonaws.com/
-    
+      DIST_ID: E2ISEAWK964JBU
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
@@ -151,7 +152,7 @@ jobs:
       - name: Invalidate CloudFront cache
         if: ${{ needs.terraform.outputs.cloudfront_distribution_id != '' }}
         run: |
-          DIST_ID="$(terraform output -raw cloudfront_distribution_id 2>/dev/null | tr -d '\n')"
+          # DIST_ID="$(terraform output -raw cloudfront_distribution_id 2>/dev/null | tr -d '\n')"
           echo "Invalidating CloudFront distribution $DIST_ID"
           aws cloudfront create-invalidation --distribution-id "$DIST_ID" --paths "/*"
 
