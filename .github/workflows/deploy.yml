@@ -32,11 +32,11 @@ jobs:
             aws s3 rm s3://$BUCKET_NAME --recursive
             
             # Então, excluir o bucket
-            echo "Excluindo o bucket..."
-            aws s3api delete-bucket --bucket $BUCKET_NAME
+            # echo "Excluindo o bucket..."
+            # aws s3api delete-bucket --bucket $BUCKET_NAME
             
             # Aguardar um pouco para garantir que a exclusão se propague
-            echo "Aguardando a propagação da exclusão..."
+            # echo "Aguardando a propagação da exclusão..."
             sleep 10
           else
             echo "O bucket $BUCKET_NAME não existe ou não está acessível."
@@ -75,29 +75,29 @@ jobs:
           cd terraform-cicd
           terraform init
 
-      - name: Terraform Destroy Old CloudFront Distribuitions
-        run: |
-          cd terraform-cicd
-          terraform destroy -auto-approve 
+      # - name: Terraform Destroy Old CloudFront Distribuitions
+      #   run: |
+      #     cd terraform-cicd
+      #     terraform destroy -auto-approve 
 
-      - name: Terraform Validate
-        run: |
-          cd terraform-cicd
-          terraform validate
+      # - name: Terraform Validate
+      #   run: |
+      #     cd terraform-cicd
+      #     terraform validate
 
-      - name: Terraform Plan
-        run: |
-          cd terraform-cicd
-          terraform plan
+      # - name: Terraform Plan
+      #   run: |
+      #     cd terraform-cicd
+      #     terraform plan
 
-      - name: Terraform Apply
-        run: |
-          cd terraform-cicd
-          terraform apply -auto-approve
+      # - name: Terraform Apply
+      #   run: |
+      #     cd terraform-cicd
+      #     terraform apply -auto-approve
           
-          # Usar variáveis de ambiente definidas no job anterior
-          echo "BUCKET_NAME=${{ env.BUCKET_NAME }}" >> $GITHUB_ENV
-          echo "WEBSITE_URL=${{ env.WEBSITE_URL }}" >> $GITHUB_ENV
+      #     # Usar variáveis de ambiente definidas no job anterior
+      #     echo "BUCKET_NAME=${{ env.BUCKET_NAME }}" >> $GITHUB_ENV
+      #     echo "WEBSITE_URL=${{ env.WEBSITE_URL }}" >> $GITHUB_ENV
 
       - name: Export Terraform outputs
         id: tf_outputs
@@ -152,7 +152,6 @@ jobs:
         if: ${{ needs.terraform.outputs.cloudfront_distribution_id != '' }}
         run: |
           DIST_ID="$(terraform output -raw cloudfront_distribution_id 2>/dev/null | tr -d '\n')"
-          echo "cloudfront_distribution_id=$DIST_ID" >> "$GITHUB_OUTPUT"
           echo "Invalidating CloudFront distribution $DIST_ID"
           aws cloudfront create-invalidation --distribution-id "$DIST_ID" --paths "/*"
 
