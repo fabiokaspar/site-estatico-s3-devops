@@ -8,15 +8,15 @@ function App() {
       <header className="App-header">
         <img src={leao} className="App-logo" alt="logo" />
         <p>
-          Curso Terraform com AWS (DevOps)
+          FrontEnd CI/CD
         </p>
         <a
           className="App-link"
-          href="https://reactjs.org"
+          href="https://d3ahbqwjqepu45.cloudfront.net/"
           target="_blank"
           rel="noopener noreferrer"
         >
-          Learn React
+          Link CloudFront Domain
         </a>
       </header>
     </div>
