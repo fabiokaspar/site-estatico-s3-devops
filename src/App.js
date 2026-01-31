@@ -1,12 +1,12 @@
 // import logo from './logo.svg';
 import './App.css';
-import jim from './jim.gif';
+import leao from './leao.jpg';
 
 function App() {
   return (
     <div className="App">
       <header className="App-header">
-        <img src={jim} className="App-logo" alt="logo" />
+        <img src={leao} className="App-logo" alt="logo" />
         <p>
           Curso Terraform com AWS (DevOps)
         </p>
