@@ -6,8 +6,8 @@ on:
       - main
 
 jobs:
-  recreate_bucket:
-    name: 'Recreate S3 Bucket'
+  destroy_bucket:
+    name: 'Destroy S3 Bucket'
     runs-on: ubuntu-latest
     
     steps:
@@ -48,7 +48,7 @@ jobs:
 
   terraform:
     name: 'Terraform'
-    needs: recreate_bucket
+    needs: destroy_bucket
     runs-on: ubuntu-latest
     outputs:
       cloudfront_distribution_id: ${{ steps.tf_outputs.outputs.cloudfront_distribution_id }}
@@ -75,6 +75,13 @@ jobs:
           cd terraform-cicd
           terraform init
 
+      - name: Terraform Destroy Old CloudFront Distribuitions
+        run: |
+          cd terraform-cicd
+          terraform destroy -auto-approve \
+            -target=aws_cloudfront_distribution.this \  
+            -target=aws_cloudfront_origin_access_control.this
+
       - name: Terraform Validate
         run: |
           cd terraform-cicd
@@ -98,8 +105,11 @@ jobs:
         id: tf_outputs
         run: |
           cd terraform-cicd
-          echo "cloudfront_distribution_id=$(terraform output -raw cloudfront_distribution_id 2>/dev/null || true)" >> $GITHUB_OUTPUT
-          echo "cloudfront_domain_name=$(terraform output -raw cloudfront_domain_name 2>/dev/null || true)" >> $GITHUB_OUTPUT
+          cloudfront_distribution_id=$(terraform output -raw cloudfront_distribution_id 2>/dev/null | tr -d '\n')
+          cloudfront_domain_name=$(terraform output -raw cloudfront_domain_name 2>/dev/null | tr -d '\n')
+
+          echo "cloudfront_distribution_id=$cloudfront_distribution_id" >> "$GITHUB_OUTPUT"
+          echo "cloudfront_domain_name=$cloudfront_domain_name" >> "$GITHUB_OUTPUT"
 
   deploy:
     name: 'Deploy Website'
