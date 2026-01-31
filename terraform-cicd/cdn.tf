@@ -1,6 +1,5 @@
 resource "aws_cloudfront_origin_access_identity" "origin_access_identity" {
-  comment = local.domain
-
+  comment = "Access Identity for S3 bucket ${var.bucket_name}"
   lifecycle {
     prevent_destroy = true
   }
