@@ -1,8 +1,5 @@
 resource "aws_cloudfront_origin_access_identity" "origin_access_identity" {
   comment = "Access Identity for S3 bucket ${var.bucket_name}"
-  lifecycle {
-    prevent_destroy = true
-  }
 }
 
 resource "aws_cloudfront_distribution" "this" {
@@ -53,10 +50,5 @@ resource "aws_cloudfront_distribution" "this" {
 
   viewer_certificate {
     cloudfront_default_certificate = true
-  }
-
-  lifecycle {
-    create_before_destroy = true
-    prevent_destroy       = true
   }
 }
