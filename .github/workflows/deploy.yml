@@ -99,15 +99,15 @@ jobs:
       #     echo "BUCKET_NAME=${{ env.BUCKET_NAME }}" >> $GITHUB_ENV
       #     echo "WEBSITE_URL=${{ env.WEBSITE_URL }}" >> $GITHUB_ENV
 
-      - name: Export Terraform outputs
-        id: tf_outputs
-        run: |
-          cd terraform-cicd
-          cloudfront_distribution_id=$(terraform output -raw cloudfront_distribution_id 2>/dev/null | tr -d '\n')
-          cloudfront_domain_name=$(terraform output -raw cloudfront_domain_name 2>/dev/null | tr -d '\n')
+      # - name: Export Terraform outputs
+      #   id: tf_outputs
+      #   run: |
+      #     cd terraform-cicd
+      #     cloudfront_distribution_id=$(terraform output -raw cloudfront_distribution_id 2>/dev/null | tr -d '\n')
+      #     cloudfront_domain_name=$(terraform output -raw cloudfront_domain_name 2>/dev/null | tr -d '\n')
 
-          echo "cloudfront_distribution_id=$cloudfront_distribution_id" >> "$GITHUB_OUTPUT"
-          echo "cloudfront_domain_name=$cloudfront_domain_name" >> "$GITHUB_OUTPUT"
+      #     echo "cloudfront_distribution_id=$cloudfront_distribution_id" >> "$GITHUB_OUTPUT"
+      #     echo "cloudfront_domain_name=$cloudfront_domain_name" >> "$GITHUB_OUTPUT"
 
   deploy:
     name: 'Deploy Website'
@@ -117,6 +117,7 @@ jobs:
       BUCKET_NAME: site-estatico-s3-fabiokaspar2026
       WEBSITE_URL: http://site-estatico-s3-fabiokaspar2026.s3-website-us-east-1.amazonaws.com/
       DIST_ID: E2ISEAWK964JBU
+      CF_URL: https://d3ahbqwjqepu45.cloudfront.net
 
     steps:
       - name: Checkout code
@@ -159,9 +160,4 @@ jobs:
         run: |
           echo "Website deployed successfully!"
           echo "S3 URL: $WEBSITE_URL"
-          CF_DOMAIN="${{ needs.terraform.outputs.cloudfront_domain_name }}"
-          if [ -n "$CF_DOMAIN" ]; then
-            echo "CloudFront URL: https://$CF_DOMAIN"
-          else
-            echo "CloudFront URL: (not provisioned)"
-          fi
+          echo "CF URL: $CF_URL"
