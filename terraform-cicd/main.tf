@@ -48,17 +48,22 @@ resource "aws_s3_bucket_ownership_controls" "this" {
 resource "aws_s3_bucket_policy" "website_policy" {
     bucket = aws_s3_bucket.website.id
 
-    depends_on = [aws_s3_bucket_public_access_block.website_public_access]
+    depends_on = [
+      aws_s3_bucket_public_access_block.website_public_access,
+      aws_cloudfront_origin_access_identity.origin_access_identity
+    ]
 
     policy = jsonencode({
         Version = "2012-10-17"
         Statement = [
             {
-                Sid       = "PublicReadGetObject"
-                Effect    = "Allow"
-                Principal = "*"
-                Action    = "s3:GetObject"
-                Resource  = "${aws_s3_bucket.website.arn}/*"
+                Sid = "AllowCloudFrontServicePrincipalReadOnly"
+                Effect = "Allow"
+                Principal = {
+                  AWS = "arn:aws:iam::cloudfront:user/CloudFront Origin Access Identity ${aws_cloudfront_origin_access_identity.origin_access_identity.id}"
+                }
+                Action = "s3:GetObject"
+                Resource = "${aws_s3_bucket.website.arn}/*"
             }
         ]
     })
