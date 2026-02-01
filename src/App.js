@@ -7,9 +7,9 @@ function App() {
     <div className="App">
       <header className="App-header">
         <img src={leao} className="App-logo" alt="logo" />
-        <p>
+        <h1>
           FrontEnd CI/CD
-        </p>
+        </h1>
         <a
           className="App-link"
           href="https://d3ahbqwjqepu45.cloudfront.net/"
