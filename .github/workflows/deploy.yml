@@ -111,7 +111,6 @@ jobs:
 
   deploy:
     name: 'Deploy Website'
-    needs: terraform
     runs-on: ubuntu-latest
     env:
       BUCKET_NAME: site-estatico-s3-fabiokaspar2026
