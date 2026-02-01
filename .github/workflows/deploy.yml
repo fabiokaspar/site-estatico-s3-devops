@@ -6,8 +6,8 @@ on:
       - main
 
 jobs:
-  destroy_bucket:
-    name: 'Destroy S3 Bucket'
+  clear_bucket:
+    name: 'Clear S3 Bucket'
     runs-on: ubuntu-latest
     
     steps:
@@ -18,14 +18,14 @@ jobs:
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: us-east-1
 
-      - name: Destroy existing bucket if it exists
-        id: destroy_bucket
+      - name: Clear existing bucket if it exists
+        id: clear_bucket
         run: |
           BUCKET_NAME="site-estatico-s3-fabiokaspar2026"
           echo "Verificando se o bucket $BUCKET_NAME existe..."
           
           if aws s3api head-bucket --bucket "$BUCKET_NAME" 2>/dev/null; then
-            echo "O bucket $BUCKET_NAME existe. Removendo..."
+            echo "O bucket $BUCKET_NAME existe. Limpando..."
             
             # Primeiro, esvaziar o bucket (requisito para exclusão)
             echo "Esvaziando o bucket..."
@@ -37,7 +37,7 @@ jobs:
             
             # Aguardar um pouco para garantir que a exclusão se propague
             # echo "Aguardando a propagação da exclusão..."
-            sleep 10
+            # sleep 10
           else
             echo "O bucket $BUCKET_NAME não existe ou não está acessível."
           fi
@@ -46,34 +46,34 @@ jobs:
           echo "BUCKET_NAME=site-estatico-s3-fabiokaspar2026" >> $GITHUB_ENV
           echo "WEBSITE_URL=http://site-estatico-s3-fabiokaspar2026.s3-website-us-east-1.amazonaws.com/" >> $GITHUB_ENV
 
-  terraform:
-    name: 'Terraform'
-    needs: destroy_bucket
-    runs-on: ubuntu-latest
-    outputs:
-      cloudfront_distribution_id: ${{ steps.tf_outputs.outputs.cloudfront_distribution_id }}
-      cloudfront_domain_name: ${{ steps.tf_outputs.outputs.cloudfront_domain_name }}
+  # terraform:
+  #   name: 'Terraform'
+  #   needs: destroy_bucket
+  #   runs-on: ubuntu-latest
+  #   outputs:
+  #     cloudfront_distribution_id: ${{ steps.tf_outputs.outputs.cloudfront_distribution_id }}
+  #     cloudfront_domain_name: ${{ steps.tf_outputs.outputs.cloudfront_domain_name }}
     
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v3
+  #   steps:
+  #     - name: Checkout code
+  #       uses: actions/checkout@v3
 
-      - name: Configure AWS credentials
-        uses: aws-actions/configure-aws-credentials@v1
-        with:
-          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          aws-region: us-east-1
+  #     - name: Configure AWS credentials
+  #       uses: aws-actions/configure-aws-credentials@v1
+  #       with:
+  #         aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+  #         aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+  #         aws-region: us-east-1
 
-      - name: Setup Terraform
-        uses: hashicorp/setup-terraform@v2
-        with:
-          terraform_version: 1.5.0
+      # - name: Setup Terraform
+      #   uses: hashicorp/setup-terraform@v2
+      #   with:
+      #     terraform_version: 1.5.0
 
-      - name: Terraform Init
-        run: |
-          cd terraform-cicd
-          terraform init
+      # - name: Terraform Init
+      #   run: |
+      #     cd terraform-cicd
+      #     terraform init
 
       # - name: Terraform Destroy Old CloudFront Distribuitions
       #   run: |
@@ -130,13 +130,6 @@ jobs:
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: us-east-1
 
-      - name: Update deploy timestamp
-        run: |
-          current_time=$(date -u +"%Y-%m-%dT%H:%M:%SZ")
-          if [ -f js/script.js ]; then
-            sed -i "s/new Date()/new Date('$current_time')/g" js/script.js
-          fi
-
       - name: Build Website
         run: |
           echo "Buildando aplicação react..."
@@ -152,7 +145,6 @@ jobs:
 
       - name: Invalidate CloudFront cache
         run: |
-          # DIST_ID="$(terraform output -raw cloudfront_distribution_id 2>/dev/null | tr -d '\n')"
           echo "Invalidating CloudFront distribution $DIST_ID"
           aws cloudfront create-invalidation --distribution-id "$DIST_ID" --paths "/*"
 
